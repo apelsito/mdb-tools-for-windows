@@ -64,6 +64,81 @@ mdb-export --help
 ```
 Esto mostrará las opciones y detalles de uso específicos de cada herramienta en **mdbtools**.
 
+## Proceso de Realización de la Compilación
+
+Este proyecto ha sido compilado y adaptado para sistemas Windows de 64 bits utilizando herramientas y librerías de código abierto. A continuación se describen los pasos, herramientas y librerías necesarias para reproducir esta compilación.
+
+### Herramientas Utilizadas
+
+1. **MSYS2**: Una plataforma de desarrollo de código abierto que proporciona una interfaz de terminal y un entorno de desarrollo compatible con herramientas de Unix para Windows.
+2. **MinGW-w64**: Una versión de GCC (GNU Compiler Collection) adaptada para compilar aplicaciones en Windows. Específicamente, utilizamos el compilador de 64 bits.
+3. **Automake y Autoconf**: Herramientas de GNU que ayudan en el proceso de configuración y construcción del software.
+4. **Libtool**: Herramienta utilizada para crear bibliotecas compartidas de una manera portátil.
+5. **Librerías de MSYS2**: Incluyendo `libgcc`, `libiconv`, `libreadline`, `libtermcap`, y `libwinpthread` para asegurar la compatibilidad en Windows.
+
+### Librerías y Dependencias
+
+La compilación incluyó varias librerías de MSYS2 que son necesarias para que **mdbtools** funcione en un sistema Windows de 64 bits:
+
+- **libgcc**: Biblioteca de GCC para operaciones matemáticas avanzadas.
+- **libiconv**: Biblioteca para la conversión de encodings de texto.
+- **libreadline**: Biblioteca que permite la edición de líneas de texto.
+- **libtermcap**: Para el control de terminal.
+- **libwinpthread**: Biblioteca de hilos compatible con Windows.
+
+### Proceso de Compilación
+
+1. **Clonar el Repositorio de mdbtools**: Se comenzó clonando el repositorio oficial de **mdbtools** desde GitHub.
+   
+   ```bash
+   git clone https://github.com/mdbtools/mdbtools.git
+    ```
+
+2. **Configuración del Entorno:** Usando MSYS2, se instalaron las dependencias necesarias:
+   ```bash
+    pacman -S base-devel mingw-w64-x86_64-toolchain autoconf automake libtool
+    ```
+3. **Configurar y Compilar:** Desde la terminal de MSYS2 MinGW64 (debes abrir la terminal MinGW64), se ejecutaron los siguientes comandos para configurar y compilar:
+   ```bash
+    autoreconf -i -f
+    ```
+    ```bash
+    ./configure --host=x86_64-w64-mingw32
+    ```
+    ```bash
+    make install
+    ```
+
+4. **Soluciones a Errores de Compatibilidad**: Durante la compilación, surgieron errores relacionados con el uso de tipos de datos y declaraciones de funciones específicos de Windows, como `locale_t` y `spawnv`. Estos problemas se resolvieron realizando los siguientes ajustes:
+
+   - **Cambio de `locale_t` a `_locale_t`**:
+     En el archivo de cabecera `mdbtools.h`, había una declaración que usaba `locale_t`, un tipo no reconocido en entornos Windows bajo MSYS2/MinGW. La línea original era:
+     ```c
+     typedef locale_t mdb_locale_t;
+     ```
+     Para que funcionara en Windows, cambiamos esta línea a:
+     ```c
+     typedef _locale_t mdb_locale_t;
+     ```
+
+   - **Modificación de la Declaración de `spawnv`**:
+     Otro error ocurrió en el archivo `process.h`, relacionado con la declaración de `spawnv`, que causaba un conflicto de tipos. La línea original en `process.h` era:
+     ```c
+     _CRTIMP intptr_t __cdecl spawnv(int, const char *_Filename, char *const _ArgList[]) __MINGW_ATTRIB_DEPRECATED_MSVC2005;
+     ```
+     Para resolver el conflicto, ajustamos la declaración cambiando `char *const _ArgList[]` a `const char *const _ArgList[]` para que coincida con el tipo esperado. La línea modificada quedó así:
+     ```c
+     _CRTIMP intptr_t __cdecl spawnv(int, const char *_Filename, const char *const _ArgList[]) __MINGW_ATTRIB_DEPRECATED_MSVC2005;
+     ```
+
+Estos ajustes en el código permitieron que la compilación continuara sin conflictos de tipos, asegurando la compatibilidad con el entorno de Windows.
+
+
+5. **Organización de los Archivos Compilados**: Una vez compilado, se recopilaron los archivos ejecutables (`.exe`) y las bibliotecas necesarias (`.dll`) en una carpeta independiente (`C:\mdb-tools`) para facilitar su uso sin dependencias externas.
+
+Este proceso documentado permite reproducir la compilación de **mdbtools** para cualquier entorno de Windows en 64 bits.
+
+
 ## Créditos
 
 Este repositorio es una compilación de **mdbtools** adaptada para sistemas Windows, permitiendo el uso de herramientas de manipulación de bases de datos Access en entornos de línea de comandos sin necesidad de software adicional. 
