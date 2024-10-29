@@ -17,16 +17,16 @@ Este repositorio contiene una versión compilada de **mdbtools** para Windows, p
 
 ### Paso 1: Mover la Carpeta a `C:\`
 
-Descarga este repositorio y mueve la carpeta `mdb-tools-for-windows` a la raíz de tu disco **C:**, de modo que la ruta completa sea `C:\mdb-tools-for-windows`.
+Descarga este repositorio y mueve la carpeta `mdbtools-app` a la raíz de tu disco **C:**, de modo que la ruta completa sea `C:\mdbtools-app`.
 
 ### Paso 2: Agregar la Carpeta al PATH de Windows
 
-Agregar `C:\mdb-tools-for-windows` al **PATH** del sistema permitirá ejecutar los comandos de **mdbtools** desde cualquier ubicación en la terminal.
+Agregar `C:\mdbtools-app` al **PATH** del sistema permitirá ejecutar los comandos de **mdbtools** desde cualquier ubicación en la terminal.
 
 1. Abre **Configuración avanzada del sistema** (puedes buscarlo desde el menú de inicio).
 2. Haz clic en **Variables de entorno**.
 3. En las **Variables de sistema**, selecciona `Path` y haz clic en **Editar**.
-4. Agrega `C:\mdb-tools-for-windows` como una nueva entrada.
+4. Agrega `C:\mdbtools-app` como una nueva entrada.
 5. Guarda los cambios y cierra la ventana.
 
 ### Paso 3: Verificar la Configuración
